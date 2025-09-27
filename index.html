@@ -663,13 +663,13 @@
                 document.querySelectorAll('.tab-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
-                document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+                document.querySelector([data-tab="${tab}"]).classList.add('active');
 
                 // Update forms
                 document.querySelectorAll('.auth-form').forEach(form => {
                     form.classList.remove('active');
                 });
-                document.getElementById(`${tab}Form`).classList.add('active');
+                document.getElementById(${tab}Form).classList.add('active');
 
                 // Update header
                 const header = document.querySelector('.form-header h2');
@@ -834,13 +834,13 @@
 
             async socialLogin(provider) {
                 this.hideMessages();
-                this.showSuccess(`Redirecting to ${provider}...`);
+                this.showSuccess(Redirecting to ${provider}...);
                 
                 // Simulate social login
                 setTimeout(() => {
                     const userData = {
-                        name: `${provider} User`,
-                        email: `user@${provider}.com`,
+                        name: ${provider} User,
+                        email: user@${provider}.com,
                         provider: provider,
                         loginTime: new Date().toISOString()
                     };
