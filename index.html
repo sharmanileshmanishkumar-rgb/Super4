@@ -401,9 +401,12 @@
                 this.currentStep = 0;
                 this.isPlaying = false;
                 this.animationInterval = null;
+                this.apiBaseUrl = 'http://localhost:5000/api';
                 
                 this.initializeEventListeners();
                 this.initializeAnimationData();
+                this.loadUserData();
+                this.checkUrlParams();
             }
 
             initializeEventListeners() {
@@ -695,6 +698,85 @@
                 explanation.style.display = 'block';
                 document.getElementById('explanationTitle').textContent = `${this.currentTopic} Explanation`;
                 document.getElementById('explanationText').textContent = this.animationData[this.currentTopic].explanation;
+            }
+
+            // New methods for backend integration
+            loadUserData() {
+                const userData = localStorage.getItem('userData');
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    console.log('User loaded:', user);
+                }
+            }
+
+            checkUrlParams() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const subject = urlParams.get('subject');
+                if (subject) {
+                    document.getElementById('topicInput').value = subject;
+                    this.generateAnimation();
+                }
+            }
+
+            async saveProgress(topic, progress) {
+                try {
+                    const userData = localStorage.getItem('userData');
+                    if (!userData) return;
+
+                    const user = JSON.parse(userData);
+                    const response = await fetch(`${this.apiBaseUrl}/progress`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            user_id: user.id,
+                            subject: this.currentTopic,
+                            topic: topic,
+                            progress_percentage: progress,
+                            time_spent: 5 // minutes
+                        })
+                    });
+
+                    if (response.ok) {
+                        console.log('Progress saved successfully');
+                    }
+                } catch (error) {
+                    console.error('Error saving progress:', error);
+                }
+            }
+
+            async getAIExplanation(topic) {
+                try {
+                    const response = await fetch(`${this.apiBaseUrl}/openai/explain`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ topic: topic })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.explanation;
+                    }
+                } catch (error) {
+                    console.error('Error getting AI explanation:', error);
+                }
+                return null;
+            }
+
+            async getGeeksForGeeksContent(topic) {
+                try {
+                    const response = await fetch(`${this.apiBaseUrl}/geeksforgeeks/${topic}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data;
+                    }
+                } catch (error) {
+                    console.error('Error getting GeeksforGeeks content:', error);
+                }
+                return null;
             }
         }
 
