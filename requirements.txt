@@ -7,3 +7,83 @@ accelerate
 safetensors
 imageio
 Pillow
+
+Got it ⚡ — 5 hours is **tight** ⏳, so you need a **super-focused roadmap** that delivers a working demo fast (and still looks hackathon-worthy). Forget big AI stuff — go for **MVP + polish**.
+
+---
+
+# 🏆 5-Hour Hackathon Roadmap
+
+---
+
+## ⏰ Hour 1 – Setup
+
+* Create **React app** (frontend only, skip backend).
+* Add **Tailwind CSS** for quick styling.
+* Install **GSAP or Anime.js** for animations.
+
+---
+
+## ⏰ Hours 2 & 3 – Core MVP
+
+* Make an **input box / dropdown** → user types/selects topic (e.g., *Stack*).
+* Store **predefined JSON scripts** for 2–3 topics (Stack, Queue, Linked List).
+
+  ```json
+  {
+    "topic": "Stack",
+    "steps": [
+      {"action": "drawStack"},
+      {"action": "push", "value": 10},
+      {"action": "push", "value": 20},
+      {"action": "pop", "value": 20}
+    ]
+  }
+  ```
+* Write a simple **animation engine** in React that:
+
+  * Reads JSON → runs animations with GSAP.
+  * Shows text explanation below animation.
+
+---
+
+## ⏰ Hour 4 – Add Features & Polish
+
+* Add **buttons**: ▶ Play, ⏸ Pause, 🔁 Restart.
+* Style UI → dark theme, centered animation area.
+* Add **at least 3 working topics** (Stack, Queue, Bubble Sort).
+
+---
+
+## ⏰ Hour 5 – Final Touch & Demo Prep
+
+* Test animations flow.
+* Record a quick **backup demo video**.
+* Prepare 1-minute pitch:
+
+  * Problem: “DSA is hard to visualize.”
+  * Solution: “Type a topic, watch it animate instantly.”
+  * Demo Stack → Queue → Bubble Sort.
+  * Future: Add AI to generate animations automatically.
+
+---
+
+# ✅ Deliverables in 5 Hours
+
+* Clean React website.
+* 2–3 working topic animations.
+* Play/Pause controls.
+* Simple polished UI.
+* Short pitch + demo.
+
+---
+
+👉 This is enough to **impress judges** because you’ll show:
+
+* Smooth animations.
+* Clear educational value.
+* Potential to scale with AI later.
+
+---
+
+Do you want me to **write you a starter React + GSAP code** for one topic (Stack animation) so your team saves time and directly builds on it?
