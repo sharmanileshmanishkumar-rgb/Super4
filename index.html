@@ -1,0 +1,1614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMate - Text to Animation</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .input-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .input-section h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .topic-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .topic-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .topic-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .topic-btn {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .topic-btn:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+            transform: translateY(-2px);
+        }
+
+        .topic-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin-top: 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .animation-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .animation-section h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 1.5rem;
+        }
+
+        .animation-container {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .animation-placeholder {
+            text-align: center;
+            color: #a0aec0;
+            font-size: 1.1rem;
+        }
+
+        .animation-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .control-btn:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .explanation {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .explanation h3 {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .explanation p {
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        /* Animation Elements */
+        .stack-container {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            gap: 5px;
+            min-height: 200px;
+            justify-content: flex-start;
+        }
+
+        .stack-item {
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(0);
+            transition: all 0.5s ease;
+        }
+
+        .queue-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 100px;
+            justify-content: center;
+        }
+
+        .queue-item {
+            width: 60px;
+            height: 50px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateX(0);
+            transition: all 0.5s ease;
+        }
+
+        .array-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            min-height: 100px;
+        }
+
+        .array-item {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .array-item.comparing {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            transform: scale(1.1);
+        }
+
+        .array-item.sorted {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        /* Binary Search Styles */
+        .binary-search-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .search-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .search-array {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .search-item {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .search-item.searching {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            transform: scale(1.1);
+        }
+
+        .search-item.found {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            transform: scale(1.2);
+        }
+
+        /* Linked List Styles */
+        .linked-list-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .list-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .linked-list {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .list-node {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .list-node::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            color: #667eea;
+            font-size: 20px;
+        }
+
+        .list-node:last-child::after {
+            display: none;
+        }
+
+        /* Tree Traversal Styles */
+        .tree-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .tree-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .tree-node {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .tree-node:hover {
+            transform: scale(1.1);
+        }
+
+        .step-indicator {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .topic-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-graduation-cap"></i> EduMate</h1>
+            <p>Transform educational concepts into interactive animations</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2><i class="fas fa-edit"></i> Choose Your Topic</h2>
+                
+                <div class="input-group">
+                    <label for="topicInput">Enter a topic or select from below:</label>
+                    <input type="text" id="topicInput" class="topic-input" placeholder="e.g., Stack, Queue, Bubble Sort...">
+                </div>
+
+                <div class="topic-buttons">
+                    <button class="topic-btn" data-topic="Stack">Stack</button>
+                    <button class="topic-btn" data-topic="Queue">Queue</button>
+                    <button class="topic-btn" data-topic="Bubble Sort">Bubble Sort</button>
+                    <button class="topic-btn" data-topic="Binary Search">Binary Search</button>
+                    <button class="topic-btn" data-topic="Linked List">Linked List</button>
+                    <button class="topic-btn" data-topic="Tree Traversal">Tree Traversal</button>
+                </div>
+
+                <button id="generateBtn" class="generate-btn">
+                    <i class="fas fa-play"></i> Generate Animation
+                </button>
+            </div>
+
+            <div class="animation-section">
+                <h2><i class="fas fa-video"></i> Animation</h2>
+                
+                <div class="animation-container" id="animationContainer">
+                    <div class="animation-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                        <p>Select a topic and click "Generate Animation" to see the magic!</p>
+                    </div>
+                </div>
+
+                <div class="controls" id="controls" style="display: none;">
+                    <button class="control-btn" id="playBtn">
+                        <i class="fas fa-play"></i> Play
+                    </button>
+                    <button class="control-btn" id="pauseBtn">
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button class="control-btn" id="restartBtn">
+                        <i class="fas fa-redo"></i> Restart
+                    </button>
+                </div>
+
+                <div class="explanation" id="explanation" style="display: none;">
+                    <h3 id="explanationTitle">Explanation</h3>
+                    <p id="explanationText">Learn how this concept works step by step.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class EduMateAnimation {
+            constructor() {
+                this.currentTopic = null;
+                this.animationData = null;
+                this.currentStep = 0;
+                this.isPlaying = false;
+                this.animationInterval = null;
+                this.apiBaseUrl = 'http://localhost:5000/api';
+                
+                this.initializeEventListeners();
+                this.initializeAnimationData();
+                this.loadUserData();
+                this.checkUrlParams();
+                this.initializeNavigation();
+            }
+
+            initializeEventListeners() {
+                // Topic buttons
+                document.querySelectorAll('.topic-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        document.getElementById('topicInput').value = btn.dataset.topic;
+                    });
+                });
+
+                // Generate button
+                document.getElementById('generateBtn').addEventListener('click', () => {
+                    this.generateAnimation();
+                });
+
+                // Control buttons
+                document.getElementById('playBtn').addEventListener('click', () => this.play());
+                document.getElementById('pauseBtn').addEventListener('click', () => this.pause());
+                document.getElementById('restartBtn').addEventListener('click', () => this.restart());
+            }
+
+            initializeAnimationData() {
+                this.animationData = {
+                    'Stack': {
+                        steps: [
+                            { action: 'createStack', description: 'Creating an empty stack' },
+                            { action: 'push', value: 10, description: 'Pushing 10 onto the stack' },
+                            { action: 'push', value: 20, description: 'Pushing 20 onto the stack' },
+                            { action: 'push', value: 30, description: 'Pushing 30 onto the stack' },
+                            { action: 'pop', description: 'Popping the top element (30)' },
+                            { action: 'pop', description: 'Popping the top element (20)' },
+                            { action: 'push', value: 40, description: 'Pushing 40 onto the stack' }
+                        ],
+                        explanation: 'A Stack is a Last In, First Out (LIFO) data structure. Elements are added and removed from the top. Think of it like a stack of plates - you can only add or remove from the top!'
+                    },
+                    'Queue': {
+                        steps: [
+                            { action: 'createQueue', description: 'Creating an empty queue' },
+                            { action: 'enqueue', value: 'A', description: 'Adding A to the queue' },
+                            { action: 'enqueue', value: 'B', description: 'Adding B to the queue' },
+                            { action: 'enqueue', value: 'C', description: 'Adding C to the queue' },
+                            { action: 'dequeue', description: 'Removing A from the queue (FIFO)' },
+                            { action: 'enqueue', value: 'D', description: 'Adding D to the queue' },
+                            { action: 'dequeue', description: 'Removing B from the queue' }
+                        ],
+                        explanation: 'A Queue is a First In, First Out (FIFO) data structure. Elements are added at the rear and removed from the front. Think of it like a line of people waiting for a bus!'
+                    },
+                    'Bubble Sort': {
+                        steps: [
+                            { action: 'createArray', values: [64, 34, 25, 12, 22, 11, 90], description: 'Starting with unsorted array' },
+                            { action: 'compare', indices: [0, 1], description: 'Comparing 64 and 34' },
+                            { action: 'swap', indices: [0, 1], description: 'Swapping 64 and 34' },
+                            { action: 'compare', indices: [1, 2], description: 'Comparing 64 and 25' },
+                            { action: 'swap', indices: [1, 2], description: 'Swapping 64 and 25' },
+                            { action: 'compare', indices: [2, 3], description: 'Comparing 64 and 12' },
+                            { action: 'swap', indices: [2, 3], description: 'Swapping 64 and 12' },
+                            { action: 'compare', indices: [3, 4], description: 'Comparing 64 and 22' },
+                            { action: 'swap', indices: [3, 4], description: 'Swapping 64 and 22' },
+                            { action: 'compare', indices: [4, 5], description: 'Comparing 64 and 11' },
+                            { action: 'swap', indices: [4, 5], description: 'Swapping 64 and 11' },
+                            { action: 'compare', indices: [5, 6], description: 'Comparing 64 and 90' },
+                            { action: 'sorted', description: 'First pass complete - largest element (90) is in correct position' }
+                        ],
+                        explanation: 'Bubble Sort repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. The largest elements "bubble" to the end of the array.'
+                    },
+                    'Binary Search': {
+                        steps: [
+                            { action: 'createArray', values: [1, 3, 5, 7, 9, 11, 13, 15, 17, 19], description: 'Creating sorted array for binary search' },
+                            { action: 'setTarget', value: 11, description: 'Searching for value 11' },
+                            { action: 'setBounds', left: 0, right: 9, description: 'Setting initial bounds (0 to 9)' },
+                            { action: 'calculateMid', mid: 4, description: 'Calculating middle index: (0+9)/2 = 4' },
+                            { action: 'compare', indices: [4], target: 11, description: 'Comparing array[4] = 9 with target 11' },
+                            { action: 'adjustBounds', left: 5, right: 9, description: '9 < 11, so search right half (5 to 9)' },
+                            { action: 'calculateMid', mid: 7, description: 'Calculating middle index: (5+9)/2 = 7' },
+                            { action: 'compare', indices: [7], target: 11, description: 'Comparing array[7] = 15 with target 11' },
+                            { action: 'adjustBounds', left: 5, right: 6, description: '15 > 11, so search left half (5 to 6)' },
+                            { action: 'calculateMid', mid: 5, description: 'Calculating middle index: (5+6)/2 = 5' },
+                            { action: 'compare', indices: [5], target: 11, description: 'Comparing array[5] = 11 with target 11' },
+                            { action: 'found', index: 5, description: 'Found! Value 11 is at index 5' }
+                        ],
+                        explanation: 'Binary Search is an efficient algorithm for finding a target value in a sorted array. It repeatedly divides the search space in half by comparing the target with the middle element.'
+                    },
+                    'Linked List': {
+                        steps: [
+                            { action: 'createList', description: 'Creating an empty linked list' },
+                            { action: 'insertHead', value: 10, description: 'Inserting 10 at the head' },
+                            { action: 'insertHead', value: 20, description: 'Inserting 20 at the head' },
+                            { action: 'insertHead', value: 30, description: 'Inserting 30 at the head' },
+                            { action: 'insertTail', value: 40, description: 'Inserting 40 at the tail' },
+                            { action: 'insertTail', value: 50, description: 'Inserting 50 at the tail' },
+                            { action: 'deleteHead', description: 'Deleting the head node (30)' },
+                            { action: 'deleteTail', description: 'Deleting the tail node (50)' },
+                            { action: 'search', value: 20, description: 'Searching for value 20' },
+                            { action: 'found', index: 1, description: 'Found 20 at position 1' }
+                        ],
+                        explanation: 'A Linked List is a linear data structure where elements are stored in nodes. Each node contains data and a pointer to the next node. It allows dynamic memory allocation and efficient insertion/deletion.'
+                    },
+                    'Tree Traversal': {
+                        steps: [
+                            { action: 'createTree', description: 'Creating a binary tree' },
+                            { action: 'insertNode', value: 10, description: 'Inserting root node 10' },
+                            { action: 'insertNode', value: 5, description: 'Inserting left child 5' },
+                            { action: 'insertNode', value: 15, description: 'Inserting right child 15' },
+                            { action: 'insertNode', value: 3, description: 'Inserting left child of 5: 3' },
+                            { action: 'insertNode', value: 7, description: 'Inserting right child of 5: 7' },
+                            { action: 'insertNode', value: 12, description: 'Inserting left child of 15: 12' },
+                            { action: 'insertNode', value: 18, description: 'Inserting right child of 15: 18' },
+                            { action: 'inorder', description: 'Inorder traversal: Left-Root-Right' },
+                            { action: 'preorder', description: 'Preorder traversal: Root-Left-Right' },
+                            { action: 'postorder', description: 'Postorder traversal: Left-Right-Root' }
+                        ],
+                        explanation: 'Tree Traversal is the process of visiting all nodes in a tree data structure. The three main types are: Inorder (Left-Root-Right), Preorder (Root-Left-Right), and Postorder (Left-Right-Root).'
+                    }
+                };
+            }
+
+            generateAnimation() {
+                const topic = document.getElementById('topicInput').value.trim();
+                if (!topic || !this.animationData[topic]) {
+                    alert('Please select a valid topic from the list!');
+                    return;
+                }
+
+                this.currentTopic = topic;
+                this.currentStep = 0;
+                this.setupAnimation();
+                this.showControls();
+                this.showExplanation();
+            }
+
+            setupAnimation() {
+                const container = document.getElementById('animationContainer');
+                container.innerHTML = '';
+                
+                const data = this.animationData[this.currentTopic];
+                
+                if (this.currentTopic === 'Stack') {
+                    this.setupStackAnimation(container);
+                } else if (this.currentTopic === 'Queue') {
+                    this.setupQueueAnimation(container);
+                } else if (this.currentTopic === 'Bubble Sort') {
+                    this.setupBubbleSortAnimation(container);
+                } else if (this.currentTopic === 'Binary Search') {
+                    this.setupBinarySearchAnimation(container);
+                } else if (this.currentTopic === 'Linked List') {
+                    this.setupLinkedListAnimation(container);
+                } else if (this.currentTopic === 'Tree Traversal') {
+                    this.setupTreeTraversalAnimation(container);
+                }
+            }
+
+            setupStackAnimation(container) {
+                const stackDiv = document.createElement('div');
+                stackDiv.className = 'stack-container';
+                stackDiv.id = 'stackContainer';
+                container.appendChild(stackDiv);
+            }
+
+            setupQueueAnimation(container) {
+                const queueDiv = document.createElement('div');
+                queueDiv.className = 'queue-container';
+                queueDiv.id = 'queueContainer';
+                container.appendChild(queueDiv);
+            }
+
+            setupBubbleSortAnimation(container) {
+                const arrayDiv = document.createElement('div');
+                arrayDiv.className = 'array-container';
+                arrayDiv.id = 'arrayContainer';
+                container.appendChild(arrayDiv);
+            }
+
+            setupBinarySearchAnimation(container) {
+                const searchDiv = document.createElement('div');
+                searchDiv.className = 'binary-search-container';
+                searchDiv.id = 'binarySearchContainer';
+                searchDiv.innerHTML = `
+                    <div class="search-info">
+                        <div class="target-info">Target: <span id="targetValue">-</span></div>
+                        <div class="bounds-info">Bounds: <span id="boundsInfo">-</span></div>
+                        <div class="mid-info">Middle: <span id="midInfo">-</span></div>
+                    </div>
+                `;
+                container.appendChild(searchDiv);
+            }
+
+            setupLinkedListAnimation(container) {
+                const listDiv = document.createElement('div');
+                listDiv.className = 'linked-list-container';
+                listDiv.id = 'linkedListContainer';
+                listDiv.innerHTML = `
+                    <div class="list-info">
+                        <div class="list-size">Size: <span id="listSize">0</span></div>
+                        <div class="current-operation">Operation: <span id="currentOp">-</span></div>
+                    </div>
+                `;
+                container.appendChild(listDiv);
+            }
+
+            setupTreeTraversalAnimation(container) {
+                const treeDiv = document.createElement('div');
+                treeDiv.className = 'tree-container';
+                treeDiv.id = 'treeContainer';
+                treeDiv.innerHTML = `
+                    <div class="tree-info">
+                        <div class="traversal-type">Traversal: <span id="traversalType">-</span></div>
+                        <div class="current-path">Path: <span id="currentPath">-</span></div>
+                    </div>
+                `;
+                container.appendChild(treeDiv);
+            }
+
+            play() {
+                if (this.isPlaying) return;
+                
+                this.isPlaying = true;
+                document.getElementById('playBtn').disabled = true;
+                document.getElementById('pauseBtn').disabled = false;
+                
+                this.executeStep();
+            }
+
+            pause() {
+                this.isPlaying = false;
+                document.getElementById('playBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+                
+                if (this.animationInterval) {
+                    clearTimeout(this.animationInterval);
+                }
+            }
+
+            restart() {
+                this.pause();
+                this.currentStep = 0;
+                this.setupAnimation();
+                this.updateExplanation('Ready to start animation');
+            }
+
+            executeStep() {
+                if (!this.isPlaying || this.currentStep >= this.animationData[this.currentTopic].steps.length) {
+                    this.pause();
+                    this.updateExplanation('Animation complete!');
+                    return;
+                }
+
+                const step = this.animationData[this.currentTopic].steps[this.currentStep];
+                this.updateExplanation(step.description);
+                this.updateStepIndicator();
+                
+                this.performAnimationStep(step);
+                
+                this.currentStep++;
+                
+                this.animationInterval = setTimeout(() => {
+                    if (this.isPlaying) {
+                        this.executeStep();
+                    }
+                }, 1500);
+            }
+
+            performAnimationStep(step) {
+                if (this.currentTopic === 'Stack') {
+                    this.performStackStep(step);
+                } else if (this.currentTopic === 'Queue') {
+                    this.performQueueStep(step);
+                } else if (this.currentTopic === 'Bubble Sort') {
+                    this.performBubbleSortStep(step);
+                } else if (this.currentTopic === 'Binary Search') {
+                    this.performBinarySearchStep(step);
+                } else if (this.currentTopic === 'Linked List') {
+                    this.performLinkedListStep(step);
+                } else if (this.currentTopic === 'Tree Traversal') {
+                    this.performTreeTraversalStep(step);
+                }
+            }
+
+            performStackStep(step) {
+                const container = document.getElementById('stackContainer');
+                
+                if (step.action === 'push') {
+                    const item = document.createElement('div');
+                    item.className = 'stack-item';
+                    item.textContent = step.value;
+                    item.style.transform = 'translateY(-100px)';
+                    item.style.opacity = '0';
+                    container.appendChild(item);
+                    
+                    setTimeout(() => {
+                        item.style.transform = 'translateY(0)';
+                        item.style.opacity = '1';
+                    }, 100);
+                } else if (step.action === 'pop') {
+                    const items = container.querySelectorAll('.stack-item');
+                    if (items.length > 0) {
+                        const lastItem = items[items.length - 1];
+                        lastItem.style.transform = 'translateY(-100px)';
+                        lastItem.style.opacity = '0';
+                        setTimeout(() => {
+                            lastItem.remove();
+                        }, 500);
+                    }
+                }
+            }
+
+            performQueueStep(step) {
+                const container = document.getElementById('queueContainer');
+                
+                if (step.action === 'enqueue') {
+                    const item = document.createElement('div');
+                    item.className = 'queue-item';
+                    item.textContent = step.value;
+                    item.style.transform = 'translateX(100px)';
+                    item.style.opacity = '0';
+                    container.appendChild(item);
+                    
+                    setTimeout(() => {
+                        item.style.transform = 'translateX(0)';
+                        item.style.opacity = '1';
+                    }, 100);
+                } else if (step.action === 'dequeue') {
+                    const items = container.querySelectorAll('.queue-item');
+                    if (items.length > 0) {
+                        const firstItem = items[0];
+                        firstItem.style.transform = 'translateX(-100px)';
+                        firstItem.style.opacity = '0';
+                        setTimeout(() => {
+                            firstItem.remove();
+                        }, 500);
+                    }
+                }
+            }
+
+            performBubbleSortStep(step) {
+                const container = document.getElementById('arrayContainer');
+                
+                if (step.action === 'createArray') {
+                    container.innerHTML = '';
+                    step.values.forEach((value, index) => {
+                        const item = document.createElement('div');
+                        item.className = 'array-item';
+                        item.textContent = value;
+                        item.dataset.value = value;
+                        item.dataset.index = index;
+                        container.appendChild(item);
+                    });
+                } else if (step.action === 'compare') {
+                    const items = container.querySelectorAll('.array-item');
+                    items[step.indices[0]].classList.add('comparing');
+                    items[step.indices[1]].classList.add('comparing');
+                } else if (step.action === 'swap') {
+                    const items = container.querySelectorAll('.array-item');
+                    const temp = items[step.indices[0]].textContent;
+                    items[step.indices[0]].textContent = items[step.indices[1]].textContent;
+                    items[step.indices[1]].textContent = temp;
+                    
+                    setTimeout(() => {
+                        items.forEach(item => item.classList.remove('comparing'));
+                    }, 500);
+                } else if (step.action === 'sorted') {
+                    const items = container.querySelectorAll('.array-item');
+                    items.forEach(item => item.classList.add('sorted'));
+                }
+            }
+
+            performBinarySearchStep(step) {
+                const container = document.getElementById('binarySearchContainer');
+                
+                if (step.action === 'createArray') {
+                    // Create array visualization
+                    const arrayDiv = document.createElement('div');
+                    arrayDiv.className = 'search-array';
+                    arrayDiv.id = 'searchArray';
+                    step.values.forEach((value, index) => {
+                        const item = document.createElement('div');
+                        item.className = 'search-item';
+                        item.textContent = value;
+                        item.dataset.index = index;
+                        arrayDiv.appendChild(item);
+                    });
+                    container.appendChild(arrayDiv);
+                } else if (step.action === 'setTarget') {
+                    document.getElementById('targetValue').textContent = step.value;
+                } else if (step.action === 'setBounds') {
+                    document.getElementById('boundsInfo').textContent = `${step.left} to ${step.right}`;
+                } else if (step.action === 'calculateMid') {
+                    document.getElementById('midInfo').textContent = step.mid;
+                } else if (step.action === 'compare') {
+                    const items = document.querySelectorAll('.search-item');
+                    items.forEach(item => item.classList.remove('searching', 'found', 'not-found'));
+                    items[step.indices[0]].classList.add('searching');
+                } else if (step.action === 'adjustBounds') {
+                    document.getElementById('boundsInfo').textContent = `${step.left} to ${step.right}`;
+                } else if (step.action === 'found') {
+                    const items = document.querySelectorAll('.search-item');
+                    items.forEach(item => item.classList.remove('searching'));
+                    items[step.index].classList.add('found');
+                }
+            }
+
+            performLinkedListStep(step) {
+                const container = document.getElementById('linkedListContainer');
+                
+                if (step.action === 'createList') {
+                    container.innerHTML = '<div class="linked-list" id="linkedList"></div>';
+                    document.getElementById('listSize').textContent = '0';
+                } else if (step.action === 'insertHead' || step.action === 'insertTail') {
+                    const list = document.getElementById('linkedList');
+                    const node = document.createElement('div');
+                    node.className = 'list-node';
+                    node.textContent = step.value;
+                    
+                    if (step.action === 'insertHead') {
+                        list.insertBefore(node, list.firstChild);
+                    } else {
+                        list.appendChild(node);
+                    }
+                    
+                    document.getElementById('listSize').textContent = list.children.length;
+                    document.getElementById('currentOp').textContent = `Insert ${step.value} at ${step.action === 'insertHead' ? 'head' : 'tail'}`;
+                } else if (step.action === 'deleteHead' || step.action === 'deleteTail') {
+                    const list = document.getElementById('linkedList');
+                    if (list.children.length > 0) {
+                        if (step.action === 'deleteHead') {
+                            list.removeChild(list.firstChild);
+                        } else {
+                            list.removeChild(list.lastChild);
+                        }
+                    }
+                    document.getElementById('listSize').textContent = list.children.length;
+                    document.getElementById('currentOp').textContent = `Delete from ${step.action === 'deleteHead' ? 'head' : 'tail'}`;
+                } else if (step.action === 'search') {
+                    document.getElementById('currentOp').textContent = `Searching for ${step.value}`;
+                } else if (step.action === 'found') {
+                    document.getElementById('currentOp').textContent = `Found at position ${step.index}`;
+                }
+            }
+
+            performTreeTraversalStep(step) {
+                const container = document.getElementById('treeContainer');
+                
+                if (step.action === 'createTree') {
+                    container.innerHTML = '<div class="tree" id="tree"></div>';
+                } else if (step.action === 'insertNode') {
+                    const tree = document.getElementById('tree');
+                    const node = document.createElement('div');
+                    node.className = 'tree-node';
+                    node.textContent = step.value;
+                    node.dataset.value = step.value;
+                    tree.appendChild(node);
+                } else if (step.action === 'inorder' || step.action === 'preorder' || step.action === 'postorder') {
+                    document.getElementById('traversalType').textContent = step.action;
+                    document.getElementById('currentPath').textContent = 'Starting traversal...';
+                }
+            }
+
+            updateExplanation(text) {
+                document.getElementById('explanationText').textContent = text;
+            }
+
+            updateStepIndicator() {
+                const container = document.getElementById('animationContainer');
+                let indicator = container.querySelector('.step-indicator');
+                if (!indicator) {
+                    indicator = document.createElement('div');
+                    indicator.className = 'step-indicator';
+                    container.appendChild(indicator);
+                }
+                indicator.textContent = `Step ${this.currentStep + 1} of ${this.animationData[this.currentTopic].steps.length}`;
+            }
+
+            showControls() {
+                document.getElementById('controls').style.display = 'flex';
+            }
+
+            showExplanation() {
+                const explanation = document.getElementById('explanation');
+                explanation.style.display = 'block';
+                document.getElementById('explanationTitle').textContent = `${this.currentTopic} Explanation`;
+                document.getElementById('explanationText').textContent = this.animationData[this.currentTopic].explanation;
+            }
+
+            // New methods for backend integration
+            loadUserData() {
+                const userData = localStorage.getItem('userData');
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    console.log('User loaded:', user);
+                }
+            }
+
+            checkUrlParams() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const subject = urlParams.get('subject');
+                if (subject) {
+                    document.getElementById('topicInput').value = subject;
+                    this.generateAnimation();
+                }
+            }
+
+            async saveProgress(topic, progress) {
+                try {
+                    const userData = localStorage.getItem('userData');
+                    if (!userData) return;
+
+                    const user = JSON.parse(userData);
+                    const response = await fetch(`${this.apiBaseUrl}/progress`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            user_id: user.id,
+                            subject: this.currentTopic,
+                            topic: topic,
+                            progress_percentage: progress,
+                            time_spent: 5 // minutes
+                        })
+                    });
+
+                    if (response.ok) {
+                        console.log('Progress saved successfully');
+                    }
+                } catch (error) {
+                    console.error('Error saving progress:', error);
+                }
+            }
+
+            async getAIExplanation(topic) {
+                try {
+                    const response = await fetch(`${this.apiBaseUrl}/openai/explain`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ topic: topic })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.explanation;
+                    }
+                } catch (error) {
+                    console.error('Error getting AI explanation:', error);
+                }
+                return null;
+            }
+
+            // Navigation and content loading methods
+            initializeNavigation() {
+                // Add navigation links
+                this.addNavigationLinks();
+                this.setupContentSections();
+            }
+
+            addNavigationLinks() {
+                const container = document.querySelector('.container');
+                if (!container) return;
+
+                // Add navigation bar
+                const nav = document.createElement('nav');
+                nav.className = 'animation-nav';
+                nav.innerHTML = `
+                    <div class="nav-links">
+                        <a href="home.html" class="nav-link">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                        <a href="standards.html" class="nav-link">
+                            <i class="fas fa-book"></i> Standards
+                        </a>
+                        <a href="about.html" class="nav-link">
+                            <i class="fas fa-info-circle"></i> About
+                        </a>
+                        <a href="contact.html" class="nav-link">
+                            <i class="fas fa-envelope"></i> Contact
+                        </a>
+                    </div>
+                `;
+                
+                // Add navigation styles
+                const navStyle = document.createElement('style');
+                navStyle.textContent = `
+                    .animation-nav {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        padding: 1rem 0;
+                        margin-bottom: 2rem;
+                        border-radius: 10px;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                    }
+                    .nav-links {
+                        display: flex;
+                        justify-content: center;
+                        gap: 2rem;
+                        flex-wrap: wrap;
+                    }
+                    .nav-link {
+                        color: white;
+                        text-decoration: none;
+                        padding: 0.8rem 1.5rem;
+                        border-radius: 25px;
+                        transition: all 0.3s;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        font-weight: 500;
+                    }
+                    .nav-link:hover {
+                        background: rgba(255,255,255,0.2);
+                        transform: translateY(-2px);
+                    }
+                    @media (max-width: 768px) {
+                        .nav-links {
+                            gap: 1rem;
+                        }
+                        .nav-link {
+                            padding: 0.6rem 1rem;
+                            font-size: 0.9rem;
+                        }
+                    }
+                `;
+                document.head.appendChild(navStyle);
+                container.insertBefore(nav, container.firstChild);
+            }
+
+            setupContentSections() {
+                // Add content sections for different subjects
+                this.addSubjectSections();
+            }
+
+            addSubjectSections() {
+                const container = document.querySelector('.container');
+                if (!container) return;
+
+                // Add subject content sections
+                const contentSection = document.createElement('div');
+                contentSection.className = 'subject-content-section';
+                contentSection.innerHTML = `
+                    <div class="content-header">
+                        <h2>Educational Content</h2>
+                        <p>Explore interactive learning materials for different subjects</p>
+                    </div>
+                    <div class="subject-grid">
+                        <div class="subject-card" onclick="loadSubjectContent('physics')">
+                            <div class="subject-icon">
+                                <i class="fas fa-atom"></i>
+                            </div>
+                            <h3>Physics</h3>
+                            <p>Mechanics, Thermodynamics, Waves, Electricity</p>
+                            <div class="subject-resources">
+                                <span class="resource-tag">Simulations</span>
+                                <span class="resource-tag">Videos</span>
+                                <span class="resource-tag">Problems</span>
+                            </div>
+                        </div>
+                        <div class="subject-card" onclick="loadSubjectContent('chemistry')">
+                            <div class="subject-icon">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <h3>Chemistry</h3>
+                            <p>Atomic Structure, Bonding, Reactions, Acids & Bases</p>
+                            <div class="subject-resources">
+                                <span class="resource-tag">Visualizations</span>
+                                <span class="resource-tag">Virtual Labs</span>
+                                <span class="resource-tag">Equations</span>
+                            </div>
+                        </div>
+                        <div class="subject-card" onclick="loadSubjectContent('biology')">
+                            <div class="subject-icon">
+                                <i class="fas fa-dna"></i>
+                            </div>
+                            <h3>Biology</h3>
+                            <p>Cell Biology, Genetics, Ecology, Human Body</p>
+                            <div class="subject-resources">
+                                <span class="resource-tag">3D Models</span>
+                                <span class="resource-tag">Anatomy</span>
+                                <span class="resource-tag">Genetics</span>
+                            </div>
+                        </div>
+                        <div class="subject-card" onclick="loadSubjectContent('mathematics')">
+                            <div class="subject-icon">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <h3>Mathematics</h3>
+                            <p>Algebra, Geometry, Trigonometry, Statistics</p>
+                            <div class="subject-resources">
+                                <span class="resource-tag">Calculator</span>
+                                <span class="resource-tag">Graphs</span>
+                                <span class="resource-tag">Problems</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Add subject section styles
+                const subjectStyle = document.createElement('style');
+                subjectStyle.textContent = `
+                    .subject-content-section {
+                        background: white;
+                        border-radius: 15px;
+                        padding: 2rem;
+                        margin: 2rem 0;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                    }
+                    .content-header {
+                        text-align: center;
+                        margin-bottom: 2rem;
+                    }
+                    .content-header h2 {
+                        color: #2d3748;
+                        margin-bottom: 0.5rem;
+                    }
+                    .content-header p {
+                        color: #718096;
+                    }
+                    .subject-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                        gap: 1.5rem;
+                    }
+                    .subject-card {
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        padding: 2rem;
+                        border-radius: 15px;
+                        text-align: center;
+                        cursor: pointer;
+                        transition: transform 0.3s;
+                    }
+                    .subject-card:hover {
+                        transform: translateY(-5px);
+                    }
+                    .subject-icon {
+                        font-size: 3rem;
+                        margin-bottom: 1rem;
+                    }
+                    .subject-card h3 {
+                        font-size: 1.5rem;
+                        margin-bottom: 0.5rem;
+                    }
+                    .subject-card p {
+                        opacity: 0.9;
+                        margin-bottom: 1rem;
+                    }
+                    .subject-resources {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 0.5rem;
+                        justify-content: center;
+                    }
+                    .resource-tag {
+                        background: rgba(255,255,255,0.2);
+                        padding: 0.3rem 0.6rem;
+                        border-radius: 15px;
+                        font-size: 0.8rem;
+                        border: 1px solid rgba(255,255,255,0.3);
+                    }
+                `;
+                document.head.appendChild(subjectStyle);
+                container.appendChild(contentSection);
+            }
+        }
+
+        // Global functions for subject content loading
+        async function loadSubjectContent(subject) {
+            try {
+                // Show loading state
+                showLoadingState(subject);
+                
+                // Load content from API
+                const response = await fetch(`http://localhost:5000/api/content/6-10/${subject}`);
+                const data = await response.json();
+                
+                // Display content in modal
+                displaySubjectModal(data, subject);
+                
+            } catch (error) {
+                console.error('Error loading subject content:', error);
+                showError(`Failed to load ${subject} content. Please try again.`);
+            }
+        }
+
+        function showLoadingState(subject) {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading-indicator';
+            loadingDiv.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                           background: rgba(0,0,0,0.8); z-index: 10000; display: flex; 
+                           align-items: center; justify-content: center;">
+                    <div style="background: white; padding: 2rem; border-radius: 10px; 
+                               box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center;">
+                        <div style="width: 40px; height: 40px; border: 4px solid #f3f3f3; 
+                                   border-top: 4px solid #667eea; border-radius: 50%; 
+                                   animation: spin 1s linear infinite; margin: 0 auto 1rem;"></div>
+                        <p>Loading ${subject} content...</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loadingDiv);
+        }
+
+        function displaySubjectModal(data, subject) {
+            // Remove loading indicator
+            const loading = document.getElementById('loading-indicator');
+            if (loading) loading.remove();
+
+            // Create modal
+            const modal = document.createElement('div');
+            modal.className = 'subject-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>${data.title || subject.charAt(0).toUpperCase() + subject.slice(1)}</h2>
+                        <button class="close-btn" onclick="closeSubjectModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        ${generateSubjectContent(data, subject)}
+                    </div>
+                </div>
+            `;
+
+            // Add modal styles
+            const modalStyle = document.createElement('style');
+            modalStyle.textContent = `
+                .subject-modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0, 0, 0, 0.8);
+                    z-index: 10000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 2rem;
+                }
+                .modal-content {
+                    background: white;
+                    border-radius: 15px;
+                    max-width: 90vw;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                }
+                .modal-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 2rem;
+                    border-bottom: 1px solid #e2e8f0;
+                }
+                .close-btn {
+                    background: none;
+                    border: none;
+                    font-size: 2rem;
+                    cursor: pointer;
+                    color: #666;
+                }
+                .modal-body {
+                    padding: 2rem;
+                }
+                .content-section {
+                    margin-bottom: 2rem;
+                }
+                .content-section h3 {
+                    color: #667eea;
+                    margin-bottom: 1rem;
+                }
+                .topics-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 1rem;
+                }
+                .topic-card {
+                    background: #f7fafc;
+                    padding: 1rem;
+                    border-radius: 10px;
+                    border: 1px solid #e2e8f0;
+                }
+                .topic-card h4 {
+                    color: #2d3748;
+                    margin-bottom: 0.5rem;
+                }
+                .subtopics {
+                    list-style: none;
+                    padding: 0;
+                }
+                .subtopics li {
+                    padding: 0.3rem 0;
+                    color: #718096;
+                }
+                .resources {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.5rem;
+                    margin-top: 1rem;
+                }
+                .resource-item {
+                    background: #667eea;
+                    color: white;
+                    padding: 0.5rem 1rem;
+                    border-radius: 20px;
+                    font-size: 0.9rem;
+                }
+                .action-buttons {
+                    display: flex;
+                    gap: 1rem;
+                    margin-top: 2rem;
+                    flex-wrap: wrap;
+                }
+                .action-btn {
+                    background: #667eea;
+                    color: white;
+                    border: none;
+                    padding: 1rem 2rem;
+                    border-radius: 10px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    transition: background 0.3s;
+                }
+                .action-btn:hover {
+                    background: #5a67d8;
+                }
+                .action-btn.secondary {
+                    background: #48bb78;
+                }
+                .action-btn.secondary:hover {
+                    background: #38a169;
+                }
+            `;
+            document.head.appendChild(modalStyle);
+            document.body.appendChild(modal);
+        }
+
+        function generateSubjectContent(data, subject) {
+            let html = '';
+
+            if (data.topics && data.topics.length > 0) {
+                html += `
+                    <div class="content-section">
+                        <h3>Topics Covered</h3>
+                        <div class="topics-grid">
+                            ${data.topics.map(topic => `
+                                <div class="topic-card">
+                                    <h4>${topic.name}</h4>
+                                    <ul class="subtopics">
+                                        ${topic.subtopics ? topic.subtopics.map(subtopic => `<li>${subtopic}</li>`).join('') : ''}
+                                    </ul>
+                                    ${topic.videos ? `
+                                        <div style="margin-top: 1rem;">
+                                            <strong>Videos:</strong>
+                                            <ul style="margin-top: 0.5rem;">
+                                                ${topic.videos.map(video => `<li>${video.title} (${video.duration})</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (data.resources && data.resources.length > 0) {
+                html += `
+                    <div class="content-section">
+                        <h3>Learning Resources</h3>
+                        <div class="resources">
+                            ${data.resources.map(resource => `
+                                <span class="resource-item">${resource}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `
+                <div class="content-section">
+                    <h3>Get Started</h3>
+                    <p>Choose how you'd like to begin learning ${subject}:</p>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="startAnimation('${subject}')">
+                            <i class="fas fa-play"></i> Start with Animations
+                        </button>
+                        <button class="action-btn secondary" onclick="loadVideos('${subject}')">
+                            <i class="fas fa-video"></i> Watch Videos
+                        </button>
+                        <button class="action-btn secondary" onclick="loadPractice('${subject}')">
+                            <i class="fas fa-puzzle-piece"></i> Practice Problems
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            return html;
+        }
+
+        function closeSubjectModal() {
+            const modal = document.querySelector('.subject-modal');
+            if (modal) {
+                modal.remove();
+            }
+            const loading = document.getElementById('loading-indicator');
+            if (loading) {
+                loading.remove();
+            }
+        }
+
+        function startAnimation(subject) {
+            closeSubjectModal();
+            // Set the topic and generate animation
+            document.getElementById('topicInput').value = subject;
+            if (window.eduMateAnimation) {
+                window.eduMateAnimation.generateAnimation();
+            }
+        }
+
+        async function loadVideos(subject) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/videos/${subject}`);
+                const data = await response.json();
+                
+                if (data.videos && data.videos.length > 0) {
+                    const videoList = data.videos.map(video => 
+                        `<li><strong>${video.title}</strong> - ${video.duration} (${video.level})</li>`
+                    ).join('');
+                    
+                    alert(`Available Videos for ${subject}:\n\n${videoList}\n\nNote: Video URLs will be implemented in the full version.`);
+                } else {
+                    alert(`No videos available for ${subject} yet.`);
+                }
+            } catch (error) {
+                alert(`Error loading videos for ${subject}. Please try again.`);
+            }
+        }
+
+        async function loadPractice(subject) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/practice/${subject}/easy`);
+                const data = await response.json();
+                
+                if (data.problems && data.problems.length > 0) {
+                    const problemList = data.problems.map(problem => 
+                        `Q${problem.id}: ${problem.question}\nOptions: ${problem.options.join(', ')}`
+                    ).join('\n\n');
+                    
+                    alert(`Practice Problems for ${subject}:\n\n${problemList}\n\nNote: Interactive practice will be implemented in the full version.`);
+                } else {
+                    alert(`No practice problems available for ${subject} yet.`);
+                }
+            } catch (error) {
+                alert(`Error loading practice problems for ${subject}. Please try again.`);
+            }
+        }
+
+        function showError(message) {
+            alert(message);
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            window.eduMateAnimation = new EduMateAnimation();
+        });
+    </script>
+</body>
+</html>

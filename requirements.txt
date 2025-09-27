@@ -1,0 +1,14 @@
+torch
+torchvision
+torchaudio
+diffusers
+transformers
+accelerate
+safetensors
+imageio
+Pillow
+Flask
+Flask-SQLAlchemy
+Flask-CORS
+PyJWT
+requests
