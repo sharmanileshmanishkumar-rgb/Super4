@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Animated Search Prototype</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .search-container {
+      text-align: center;
+    }
+
+    .search-box {
+      width: 250px;
+      padding: 10px;
+      border: 2px solid #0077ff;
+      border-radius: 25px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .search-box:focus {
+      width: 300px;
+      border-color: #00c853;
+      box-shadow: 0 0 10px rgba(0,200,83,0.5);
+    }
+
+    .button-group {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .search-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      background: #0077ff;
+      color: #fff;
+      transition: transform 0.2s, background 0.3s;
+    }
+
+    .search-btn:hover {
+      transform: scale(1.1);
+      background: #0056cc;
+    }
+
+    /* Special animation for Google button */
+    .google:hover {
+      background: #db4437;
+    }
+
+    /* Bing button animation */
+    .bing:hover {
+      background: #008373;
+    }
+
+    /* DuckDuckGo button animation */
+    .duck:hover {
+      background: #ff6600;
+    }
+
+    /* Slide-in animation for buttons */
+    .search-btn {
+      opacity: 0;
+      transform: translateY(30px);
+      animation: slideUp 0.6s forwards;
+    }
+
+    .search-btn:nth-child(1) { animation-delay: 0.2s; }
+    .search-btn:nth-child(2) { animation-delay: 0.4s; }
+    .search-btn:nth-child(3) { animation-delay: 0.6s; }
+
+    @keyframes slideUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="search-container">
+    <input type="text" class="search-box" placeholder="Type to search...">
+    <div class="button-group">
+      <button class="search-btn google">Google</button>
+      <button class="search-btn bing">Bing</button>
+      <button class="search-btn duck">DuckDuckGo</button>
+    </div>
+  </div>
+
+  <script>
+    const input = document.querySelector('.search-box');
+    const buttons = document.querySelectorAll('.search-btn');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        let query = input.value.trim();
+        if (!query) {
+          alert("Please enter something to search!");
+          return;
+        }
+
+        let url = "";
+        if (btn.classList.contains('google')) {
+          url = `https://www.google.com/search?q=${query}`;
+        } else if (btn.classList.contains('bing')) {
+          url = `https://www.bing.com/search?q=${query}`;
+        } else if (btn.classList.contains('duck')) {
+          url = `https://duckduckgo.com/?q=${query}`;
+        }
+        window.open(url, "_blank");
+      });
+    });
+  </script>
+</body>
+</html>
