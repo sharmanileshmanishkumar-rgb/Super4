@@ -1,130 +1,707 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Animated Search Prototype</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduMate - Text to Animation</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .search-container {
-      text-align: center;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
 
-    .search-box {
-      width: 250px;
-      padding: 10px;
-      border: 2px solid #0077ff;
-      border-radius: 25px;
-      outline: none;
-      transition: 0.3s;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-    .search-box:focus {
-      width: 300px;
-      border-color: #00c853;
-      box-shadow: 0 0 10px rgba(0,200,83,0.5);
-    }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
 
-    .button-group {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
 
-    .search-btn {
-      padding: 12px 20px;
-      border: none;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 16px;
-      background: #0077ff;
-      color: #fff;
-      transition: transform 0.2s, background 0.3s;
-    }
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
 
-    .search-btn:hover {
-      transform: scale(1.1);
-      background: #0056cc;
-    }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
 
-    /* Special animation for Google button */
-    .google:hover {
-      background: #db4437;
-    }
+        .input-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
 
-    /* Bing button animation */
-    .bing:hover {
-      background: #008373;
-    }
+        .input-section h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 1.5rem;
+        }
 
-    /* DuckDuckGo button animation */
-    .duck:hover {
-      background: #ff6600;
-    }
+        .input-group {
+            margin-bottom: 20px;
+        }
 
-    /* Slide-in animation for buttons */
-    .search-btn {
-      opacity: 0;
-      transform: translateY(30px);
-      animation: slideUp 0.6s forwards;
-    }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
 
-    .search-btn:nth-child(1) { animation-delay: 0.2s; }
-    .search-btn:nth-child(2) { animation-delay: 0.4s; }
-    .search-btn:nth-child(3) { animation-delay: 0.6s; }
+        .topic-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
 
-    @keyframes slideUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  </style>
+        .topic-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .topic-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .topic-btn {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .topic-btn:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+            transform: translateY(-2px);
+        }
+
+        .topic-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin-top: 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .animation-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .animation-section h2 {
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 1.5rem;
+        }
+
+        .animation-container {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .animation-placeholder {
+            text-align: center;
+            color: #a0aec0;
+            font-size: 1.1rem;
+        }
+
+        .animation-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .control-btn:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .explanation {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .explanation h3 {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .explanation p {
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        /* Animation Elements */
+        .stack-container {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            gap: 5px;
+            min-height: 200px;
+            justify-content: flex-start;
+        }
+
+        .stack-item {
+            width: 80px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(0);
+            transition: all 0.5s ease;
+        }
+
+        .queue-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 100px;
+            justify-content: center;
+        }
+
+        .queue-item {
+            width: 60px;
+            height: 50px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateX(0);
+            transition: all 0.5s ease;
+        }
+
+        .array-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            min-height: 100px;
+        }
+
+        .array-item {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .array-item.comparing {
+            background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+            transform: scale(1.1);
+        }
+
+        .array-item.sorted {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        }
+
+        .step-indicator {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .topic-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="search-container">
-    <input type="text" class="search-box" placeholder="Type to search...">
-    <div class="button-group">
-      <button class="search-btn google">Google</button>
-      <button class="search-btn bing">Bing</button>
-      <button class="search-btn duck">DuckDuckGo</button>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-graduation-cap"></i> EduMate</h1>
+            <p>Transform educational concepts into interactive animations</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2><i class="fas fa-edit"></i> Choose Your Topic</h2>
+                
+                <div class="input-group">
+                    <label for="topicInput">Enter a topic or select from below:</label>
+                    <input type="text" id="topicInput" class="topic-input" placeholder="e.g., Stack, Queue, Bubble Sort...">
+                </div>
+
+                <div class="topic-buttons">
+                    <button class="topic-btn" data-topic="Stack">Stack</button>
+                    <button class="topic-btn" data-topic="Queue">Queue</button>
+                    <button class="topic-btn" data-topic="Bubble Sort">Bubble Sort</button>
+                    <button class="topic-btn" data-topic="Binary Search">Binary Search</button>
+                    <button class="topic-btn" data-topic="Linked List">Linked List</button>
+                    <button class="topic-btn" data-topic="Tree Traversal">Tree Traversal</button>
+                </div>
+
+                <button id="generateBtn" class="generate-btn">
+                    <i class="fas fa-play"></i> Generate Animation
+                </button>
+            </div>
+
+            <div class="animation-section">
+                <h2><i class="fas fa-video"></i> Animation</h2>
+                
+                <div class="animation-container" id="animationContainer">
+                    <div class="animation-placeholder">
+                        <i class="fas fa-play-circle"></i>
+                        <p>Select a topic and click "Generate Animation" to see the magic!</p>
+                    </div>
+                </div>
+
+                <div class="controls" id="controls" style="display: none;">
+                    <button class="control-btn" id="playBtn">
+                        <i class="fas fa-play"></i> Play
+                    </button>
+                    <button class="control-btn" id="pauseBtn">
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button class="control-btn" id="restartBtn">
+                        <i class="fas fa-redo"></i> Restart
+                    </button>
+                </div>
+
+                <div class="explanation" id="explanation" style="display: none;">
+                    <h3 id="explanationTitle">Explanation</h3>
+                    <p id="explanationText">Learn how this concept works step by step.</p>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    const input = document.querySelector('.search-box');
-    const buttons = document.querySelectorAll('.search-btn');
+    <script>
+        class EduMateAnimation {
+            constructor() {
+                this.currentTopic = null;
+                this.animationData = null;
+                this.currentStep = 0;
+                this.isPlaying = false;
+                this.animationInterval = null;
+                
+                this.initializeEventListeners();
+                this.initializeAnimationData();
+            }
 
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        let query = input.value.trim();
-        if (!query) {
-          alert("Please enter something to search!");
-          return;
+            initializeEventListeners() {
+                // Topic buttons
+                document.querySelectorAll('.topic-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.topic-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        document.getElementById('topicInput').value = btn.dataset.topic;
+                    });
+                });
+
+                // Generate button
+                document.getElementById('generateBtn').addEventListener('click', () => {
+                    this.generateAnimation();
+                });
+
+                // Control buttons
+                document.getElementById('playBtn').addEventListener('click', () => this.play());
+                document.getElementById('pauseBtn').addEventListener('click', () => this.pause());
+                document.getElementById('restartBtn').addEventListener('click', () => this.restart());
+            }
+
+            initializeAnimationData() {
+                this.animationData = {
+                    'Stack': {
+                        steps: [
+                            { action: 'createStack', description: 'Creating an empty stack' },
+                            { action: 'push', value: 10, description: 'Pushing 10 onto the stack' },
+                            { action: 'push', value: 20, description: 'Pushing 20 onto the stack' },
+                            { action: 'push', value: 30, description: 'Pushing 30 onto the stack' },
+                            { action: 'pop', description: 'Popping the top element (30)' },
+                            { action: 'pop', description: 'Popping the top element (20)' },
+                            { action: 'push', value: 40, description: 'Pushing 40 onto the stack' }
+                        ],
+                        explanation: 'A Stack is a Last In, First Out (LIFO) data structure. Elements are added and removed from the top. Think of it like a stack of plates - you can only add or remove from the top!'
+                    },
+                    'Queue': {
+                        steps: [
+                            { action: 'createQueue', description: 'Creating an empty queue' },
+                            { action: 'enqueue', value: 'A', description: 'Adding A to the queue' },
+                            { action: 'enqueue', value: 'B', description: 'Adding B to the queue' },
+                            { action: 'enqueue', value: 'C', description: 'Adding C to the queue' },
+                            { action: 'dequeue', description: 'Removing A from the queue (FIFO)' },
+                            { action: 'enqueue', value: 'D', description: 'Adding D to the queue' },
+                            { action: 'dequeue', description: 'Removing B from the queue' }
+                        ],
+                        explanation: 'A Queue is a First In, First Out (FIFO) data structure. Elements are added at the rear and removed from the front. Think of it like a line of people waiting for a bus!'
+                    },
+                    'Bubble Sort': {
+                        steps: [
+                            { action: 'createArray', values: [64, 34, 25, 12, 22, 11, 90], description: 'Starting with unsorted array' },
+                            { action: 'compare', indices: [0, 1], description: 'Comparing 64 and 34' },
+                            { action: 'swap', indices: [0, 1], description: 'Swapping 64 and 34' },
+                            { action: 'compare', indices: [1, 2], description: 'Comparing 64 and 25' },
+                            { action: 'swap', indices: [1, 2], description: 'Swapping 64 and 25' },
+                            { action: 'compare', indices: [2, 3], description: 'Comparing 64 and 12' },
+                            { action: 'swap', indices: [2, 3], description: 'Swapping 64 and 12' },
+                            { action: 'compare', indices: [3, 4], description: 'Comparing 64 and 22' },
+                            { action: 'swap', indices: [3, 4], description: 'Swapping 64 and 22' },
+                            { action: 'compare', indices: [4, 5], description: 'Comparing 64 and 11' },
+                            { action: 'swap', indices: [4, 5], description: 'Swapping 64 and 11' },
+                            { action: 'compare', indices: [5, 6], description: 'Comparing 64 and 90' },
+                            { action: 'sorted', description: 'First pass complete - largest element (90) is in correct position' }
+                        ],
+                        explanation: 'Bubble Sort repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. The largest elements "bubble" to the end of the array.'
+                    }
+                };
+            }
+
+            generateAnimation() {
+                const topic = document.getElementById('topicInput').value.trim();
+                if (!topic || !this.animationData[topic]) {
+                    alert('Please select a valid topic from the list!');
+                    return;
+                }
+
+                this.currentTopic = topic;
+                this.currentStep = 0;
+                this.setupAnimation();
+                this.showControls();
+                this.showExplanation();
+            }
+
+            setupAnimation() {
+                const container = document.getElementById('animationContainer');
+                container.innerHTML = '';
+                
+                const data = this.animationData[this.currentTopic];
+                
+                if (this.currentTopic === 'Stack') {
+                    this.setupStackAnimation(container);
+                } else if (this.currentTopic === 'Queue') {
+                    this.setupQueueAnimation(container);
+                } else if (this.currentTopic === 'Bubble Sort') {
+                    this.setupBubbleSortAnimation(container);
+                }
+            }
+
+            setupStackAnimation(container) {
+                const stackDiv = document.createElement('div');
+                stackDiv.className = 'stack-container';
+                stackDiv.id = 'stackContainer';
+                container.appendChild(stackDiv);
+            }
+
+            setupQueueAnimation(container) {
+                const queueDiv = document.createElement('div');
+                queueDiv.className = 'queue-container';
+                queueDiv.id = 'queueContainer';
+                container.appendChild(queueDiv);
+            }
+
+            setupBubbleSortAnimation(container) {
+                const arrayDiv = document.createElement('div');
+                arrayDiv.className = 'array-container';
+                arrayDiv.id = 'arrayContainer';
+                container.appendChild(arrayDiv);
+            }
+
+            play() {
+                if (this.isPlaying) return;
+                
+                this.isPlaying = true;
+                document.getElementById('playBtn').disabled = true;
+                document.getElementById('pauseBtn').disabled = false;
+                
+                this.executeStep();
+            }
+
+            pause() {
+                this.isPlaying = false;
+                document.getElementById('playBtn').disabled = false;
+                document.getElementById('pauseBtn').disabled = true;
+                
+                if (this.animationInterval) {
+                    clearTimeout(this.animationInterval);
+                }
+            }
+
+            restart() {
+                this.pause();
+                this.currentStep = 0;
+                this.setupAnimation();
+                this.updateExplanation('Ready to start animation');
+            }
+
+            executeStep() {
+                if (!this.isPlaying || this.currentStep >= this.animationData[this.currentTopic].steps.length) {
+                    this.pause();
+                    this.updateExplanation('Animation complete!');
+                    return;
+                }
+
+                const step = this.animationData[this.currentTopic].steps[this.currentStep];
+                this.updateExplanation(step.description);
+                this.updateStepIndicator();
+                
+                this.performAnimationStep(step);
+                
+                this.currentStep++;
+                
+                this.animationInterval = setTimeout(() => {
+                    if (this.isPlaying) {
+                        this.executeStep();
+                    }
+                }, 1500);
+            }
+
+            performAnimationStep(step) {
+                if (this.currentTopic === 'Stack') {
+                    this.performStackStep(step);
+                } else if (this.currentTopic === 'Queue') {
+                    this.performQueueStep(step);
+                } else if (this.currentTopic === 'Bubble Sort') {
+                    this.performBubbleSortStep(step);
+                }
+            }
+
+            performStackStep(step) {
+                const container = document.getElementById('stackContainer');
+                
+                if (step.action === 'push') {
+                    const item = document.createElement('div');
+                    item.className = 'stack-item';
+                    item.textContent = step.value;
+                    item.style.transform = 'translateY(-100px)';
+                    item.style.opacity = '0';
+                    container.appendChild(item);
+                    
+                    setTimeout(() => {
+                        item.style.transform = 'translateY(0)';
+                        item.style.opacity = '1';
+                    }, 100);
+                } else if (step.action === 'pop') {
+                    const items = container.querySelectorAll('.stack-item');
+                    if (items.length > 0) {
+                        const lastItem = items[items.length - 1];
+                        lastItem.style.transform = 'translateY(-100px)';
+                        lastItem.style.opacity = '0';
+                        setTimeout(() => {
+                            lastItem.remove();
+                        }, 500);
+                    }
+                }
+            }
+
+            performQueueStep(step) {
+                const container = document.getElementById('queueContainer');
+                
+                if (step.action === 'enqueue') {
+                    const item = document.createElement('div');
+                    item.className = 'queue-item';
+                    item.textContent = step.value;
+                    item.style.transform = 'translateX(100px)';
+                    item.style.opacity = '0';
+                    container.appendChild(item);
+                    
+                    setTimeout(() => {
+                        item.style.transform = 'translateX(0)';
+                        item.style.opacity = '1';
+                    }, 100);
+                } else if (step.action === 'dequeue') {
+                    const items = container.querySelectorAll('.queue-item');
+                    if (items.length > 0) {
+                        const firstItem = items[0];
+                        firstItem.style.transform = 'translateX(-100px)';
+                        firstItem.style.opacity = '0';
+                        setTimeout(() => {
+                            firstItem.remove();
+                        }, 500);
+                    }
+                }
+            }
+
+            performBubbleSortStep(step) {
+                const container = document.getElementById('arrayContainer');
+                
+                if (step.action === 'createArray') {
+                    container.innerHTML = '';
+                    step.values.forEach((value, index) => {
+                        const item = document.createElement('div');
+                        item.className = 'array-item';
+                        item.textContent = value;
+                        item.dataset.value = value;
+                        item.dataset.index = index;
+                        container.appendChild(item);
+                    });
+                } else if (step.action === 'compare') {
+                    const items = container.querySelectorAll('.array-item');
+                    items[step.indices[0]].classList.add('comparing');
+                    items[step.indices[1]].classList.add('comparing');
+                } else if (step.action === 'swap') {
+                    const items = container.querySelectorAll('.array-item');
+                    const temp = items[step.indices[0]].textContent;
+                    items[step.indices[0]].textContent = items[step.indices[1]].textContent;
+                    items[step.indices[1]].textContent = temp;
+                    
+                    setTimeout(() => {
+                        items.forEach(item => item.classList.remove('comparing'));
+                    }, 500);
+                } else if (step.action === 'sorted') {
+                    const items = container.querySelectorAll('.array-item');
+                    items.forEach(item => item.classList.add('sorted'));
+                }
+            }
+
+            updateExplanation(text) {
+                document.getElementById('explanationText').textContent = text;
+            }
+
+            updateStepIndicator() {
+                const container = document.getElementById('animationContainer');
+                let indicator = container.querySelector('.step-indicator');
+                if (!indicator) {
+                    indicator = document.createElement('div');
+                    indicator.className = 'step-indicator';
+                    container.appendChild(indicator);
+                }
+                indicator.textContent = `Step ${this.currentStep + 1} of ${this.animationData[this.currentTopic].steps.length}`;
+            }
+
+            showControls() {
+                document.getElementById('controls').style.display = 'flex';
+            }
+
+            showExplanation() {
+                const explanation = document.getElementById('explanation');
+                explanation.style.display = 'block';
+                document.getElementById('explanationTitle').textContent = `${this.currentTopic} Explanation`;
+                document.getElementById('explanationText').textContent = this.animationData[this.currentTopic].explanation;
+            }
         }
 
-        let url = "";
-        if (btn.classList.contains('google')) {
-          url = `https://www.google.com/search?q=${query}`;
-        } else if (btn.classList.contains('bing')) {
-          url = `https://www.bing.com/search?q=${query}`;
-        } else if (btn.classList.contains('duck')) {
-          url = `https://duckduckgo.com/?q=${query}`;
-        }
-        window.open(url, "_blank");
-      });
-    });
-  </script>
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            new EduMateAnimation();
+        });
+    </script>
 </body>
 </html>
